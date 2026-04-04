@@ -1,6 +1,6 @@
 {
   "name": "Devialet Control",
-  "description": "Control Devialet speakers on your network — volume, playback, and device discovery via mDNS",
+  "description": "Control Devialet speakers on your network — volume, playback and device discovery",
   "uuid": "dvlt-ctrl@guzu.github.io",
   "shell-version": [
     "46",
@@ -8,6 +8,6 @@
     "48"
   ],
   "url": "https://github.com/guzu/gnome-extension-devialet",
-  "version": 1,
-  "version-name": "1.0.0"
+  "version": 2,
+  "version-name": "1.0.1"
 }
