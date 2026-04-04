@@ -1,0 +1,11 @@
+{
+  "name": "Devialet Control",
+  "description": "Control Devialet speakers on your network — volume, playback, and device discovery via mDNS",
+  "uuid": "dvlt-ctrl@music",
+  "shell-version": [
+    "46",
+    "47",
+    "48"
+  ],
+  "url": ""
+}

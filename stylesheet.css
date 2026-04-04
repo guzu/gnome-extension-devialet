@@ -1,0 +1,112 @@
+.dvlt-status-label {
+    font-size: 0.9em;
+    color: #aaa;
+    padding: 4px 0;
+}
+
+/* Per-device card */
+
+.dvlt-card {
+    border-radius: 8px;
+    padding: 4px 6px;
+    transition-duration: 150ms;
+}
+
+
+.dvlt-track-box {
+    padding: 2px 0 4px;
+}
+
+.dvlt-device-name {
+    font-size: 1em;
+    font-weight: bold;
+}
+
+.dvlt-device-state {
+    font-size: 0.85em;
+    color: #aaa;
+    padding-left: 8px;
+}
+
+/* Controls row */
+
+.dvlt-controls-row {
+    spacing: 8px;
+    padding: 6px 0 2px;
+}
+
+.dvlt-cover-art {
+    border-radius: 6px;
+}
+
+/* Track info */
+
+.dvlt-track-title {
+    font-size: 0.95em;
+    font-weight: bold;
+}
+
+.dvlt-track-artist {
+    font-size: 0.85em;
+    color: #aaa;
+    padding-top: 2px;
+}
+
+/* Transport controls */
+
+.dvlt-device-logo {
+    margin-right: 8px;
+    border-radius: 6px;
+    height: 64px;
+    width: auto;
+}
+
+.dvlt-controls-box {
+    spacing: 24px;
+    padding: 6px 0;
+}
+
+.dvlt-control-button {
+    border-radius: 50%;
+    padding: 8px;
+    min-width: 36px;
+    min-height: 36px;
+}
+
+.dvlt-control-button:hover,
+.dvlt-control-button:focus {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dvlt-control-button:active {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Volume row */
+
+.dvlt-volume-box {
+    spacing: 8px;
+    padding: 2px 0 6px;
+}
+
+.dvlt-volume-icon {
+    padding: 0 4px;
+}
+
+.dvlt-volume-label {
+    min-width: 36px;
+    text-align: right;
+}
+
+
+/* Refresh icon button */
+
+.dvlt-icon-button {
+    border-radius: 4px;
+    padding: 4px 6px;
+}
+
+.dvlt-icon-button:hover,
+.dvlt-icon-button:focus {
+    background-color: rgba(255, 255, 255, 0.1);
+}
