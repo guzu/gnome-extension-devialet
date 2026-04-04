@@ -25,6 +25,10 @@ export default class DevialetControlExtension extends Extension {
             Meta.KeyBindingFlags.NONE,
             Shell.ActionMode.NORMAL | Shell.ActionMode.OVERVIEW,
             () => this._adjustVolume(-VOLUME_STEP));
+        Main.wm.addKeybinding('toggle-mute', this._settings,
+            Meta.KeyBindingFlags.NONE,
+            Shell.ActionMode.NORMAL | Shell.ActionMode.OVERVIEW,
+            () => this._toggleMute());
     }
 
     async _adjustVolume(delta) {
@@ -42,9 +46,24 @@ export default class DevialetControlExtension extends Extension {
         this._indicator.pollAllDevices();
     }
 
+    async _toggleMute() {
+        const playing = [...this._indicator.devices.values()]
+            .filter(d => d.state);
+        if (playing.length !== 1)
+            return;
+
+        const device = playing[0];
+        if (device.state.muted)
+            await this._client.unmute(device.host, device.port);
+        else
+            await this._client.mute(device.host, device.port);
+        this._indicator.pollAllDevices();
+    }
+
     disable() {
         Main.wm.removeKeybinding('volume-up');
         Main.wm.removeKeybinding('volume-down');
+        Main.wm.removeKeybinding('toggle-mute');
         this._settings = null;
 
         this._discovery.destroy();

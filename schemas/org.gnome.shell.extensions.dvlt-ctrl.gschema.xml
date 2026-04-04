@@ -12,5 +12,10 @@
       <summary>Volume down</summary>
       <description>Decrease volume on all Devialet speakers</description>
     </key>
+    <key name="toggle-mute" type="as">
+      <default>[]</default>
+      <summary>Toggle mute</summary>
+      <description>Mute or unmute all Devialet speakers</description>
+    </key>
   </schema>
 </schemalist>

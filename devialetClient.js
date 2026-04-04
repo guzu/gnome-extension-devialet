@@ -10,6 +10,9 @@ const ENDPOINTS = {
     pause: '/groups/current/sources/current/playback/pause',
     next: '/groups/current/sources/current/playback/next',
     previous: '/groups/current/sources/current/playback/previous',
+    mute: '/groups/current/sources/current/playback/mute',
+    unmute: '/groups/current/sources/current/playback/unmute',
+    nightMode: '/systems/current/settings/audio/nightMode',
 };
 
 export default class DevialetClient {
@@ -99,6 +102,23 @@ export default class DevialetClient {
 
     async previous(host, port) {
         return (await this._request('POST', host, port, ENDPOINTS.previous)) !== null;
+    }
+
+    async mute(host, port) {
+        return (await this._request('POST', host, port, ENDPOINTS.mute)) !== null;
+    }
+
+    async unmute(host, port) {
+        return (await this._request('POST', host, port, ENDPOINTS.unmute)) !== null;
+    }
+
+    async getNightMode(host, port) {
+        const data = await this._request('GET', host, port, ENDPOINTS.nightMode);
+        return data ? data.nightMode === 'on' : null;
+    }
+
+    async setNightMode(host, port, enabled) {
+        return (await this._request('POST', host, port, ENDPOINTS.nightMode, {nightMode: enabled ? 'on' : 'off'})) !== null;
     }
 
     destroy() {

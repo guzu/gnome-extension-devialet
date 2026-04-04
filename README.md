@@ -19,13 +19,14 @@ Controls Devialet speakers using the Devialet IP Control protocol over HTTP.
 
 ## Keyboard shortcuts
 
-Volume up/down can be bound to keyboard shortcuts. The shortcuts only take effect when exactly one speaker is currently playing — if zero or multiple speakers are playing, the shortcut is ignored.
+The following actions can be bound to keyboard shortcuts. Volume up/down only take effect when exactly one speaker is currently playing. Toggle mute works when exactly one speaker is active (playing or paused).
 
 No shortcuts are assigned by default. To configure them:
 
 ```bash
 gsettings --schemadir schemas/ set org.gnome.shell.extensions.dvlt-ctrl volume-up "['<Super>AudioRaiseVolume']"
 gsettings --schemadir schemas/ set org.gnome.shell.extensions.dvlt-ctrl volume-down "['<Super>AudioLowerVolume']"
+gsettings --schemadir schemas/ set org.gnome.shell.extensions.dvlt-ctrl toggle-mute "['<Super>AudioMute']"
 ```
 
 ## Requirements

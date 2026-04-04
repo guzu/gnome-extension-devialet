@@ -125,8 +125,23 @@ class DevialetIndicator extends PanelMenu.Button {
         controlsBox.add_child(device.prevBtn);
         controlsBox.add_child(device.playPauseBtn);
         controlsBox.add_child(device.nextBtn);
+
+        // Mute + Night mode buttons (stacked vertically, right of controls)
+        const extraBox = new St.BoxLayout({
+            vertical: true,
+            style_class: 'dvlt-extra-buttons',
+            y_align: Clutter.ActorAlign.CENTER,
+        });
+        device.muteBtn = this._makeMiniBtn('audio-volume-muted-symbolic', () => this._onToggleMute(device), device);
+        device.nightBtn = this._makeMiniBtn('weather-clear-night-symbolic', () => this._onToggleNightMode(device), device);
+        this._addTooltip(device.muteBtn, 'Mute');
+        this._addTooltip(device.nightBtn, 'Night mode');
+        extraBox.add_child(device.muteBtn);
+        extraBox.add_child(device.nightBtn);
+
         controlsRow.add_child(device.coverArt);
         controlsRow.add_child(controlsBox);
+        controlsRow.add_child(extraBox);
         cardBox.add_child(controlsRow);
 
         // ── Track info (hidden when no metadata) ──
@@ -188,6 +203,40 @@ class DevialetIndicator extends PanelMenu.Button {
         if (device)
             device._signalIds.push([btn, id]);
         return btn;
+    }
+
+    _makeMiniBtn(iconName, callback, device) {
+        const btn = new St.Button({
+            style_class: 'dvlt-mini-button',
+            can_focus: true,
+            child: new St.Icon({icon_name: iconName, icon_size: 14}),
+        });
+        const id = btn.connect('clicked', callback);
+        if (device)
+            device._signalIds.push([btn, id]);
+        return btn;
+    }
+
+    _addTooltip(widget, text) {
+        widget.accessible_name = text;
+        const label = new St.Label({
+            style_class: 'dvlt-tooltip',
+            text,
+            visible: false,
+        });
+        global.stage.add_child(label);
+
+        widget.connect('enter-event', () => {
+            const [x, y] = widget.get_transformed_position();
+            const widgetWidth = widget.get_width();
+            label.set_position(
+                Math.round(x + widgetWidth / 2 - label.get_width() / 2),
+                Math.round(y - label.get_height() - 4)
+            );
+            label.show();
+        });
+        widget.connect('leave-event', () => label.hide());
+        widget.connect('destroy', () => label.destroy());
     }
 
     // ── Device lifecycle ──────────────────────────────────────────────────────
@@ -271,9 +320,10 @@ class DevialetIndicator extends PanelMenu.Button {
     async _pollDevice(device) {
         if (this._destroyed)
             return;
-        const [state, volume] = await Promise.all([
+        const [state, volume, nightMode] = await Promise.all([
             this._client.getPlaybackState(device.host, device.port),
             this._client.getVolume(device.host, device.port),
+            this._client.getNightMode(device.host, device.port),
         ]);
         if (this._destroyed)
             return;
@@ -281,6 +331,14 @@ class DevialetIndicator extends PanelMenu.Button {
         if (state) {
             device.state = state;
             this._updateDeviceUI(device, state, volume);
+        }
+
+        // Night mode button state
+        if (nightMode !== null && device.nightBtn) {
+            if (nightMode)
+                device.nightBtn.add_style_class_name('dvlt-mini-button-active');
+            else
+                device.nightBtn.remove_style_class_name('dvlt-mini-button-active');
         }
     }
 
@@ -307,6 +365,15 @@ class DevialetIndicator extends PanelMenu.Button {
         device.playPauseBtn.child.icon_name = state.playing
             ? 'media-playback-pause-symbolic'
             : 'media-playback-start-symbolic';
+
+        // Mute button icon
+        device.muteBtn.child.icon_name = state.muted
+            ? 'audio-volume-muted-symbolic'
+            : 'audio-volume-high-symbolic';
+        if (state.muted)
+            device.muteBtn.add_style_class_name('dvlt-mini-button-muted');
+        else
+            device.muteBtn.remove_style_class_name('dvlt-mini-button-muted');
 
         // Volume
         if (volume !== null) {
@@ -393,6 +460,20 @@ class DevialetIndicator extends PanelMenu.Button {
 
     async _onNext(device) {
         await this._client.next(device.host, device.port);
+        this._pollDevice(device);
+    }
+
+    async _onToggleMute(device) {
+        if (device.state && device.state.muted)
+            await this._client.unmute(device.host, device.port);
+        else
+            await this._client.mute(device.host, device.port);
+        this._pollDevice(device);
+    }
+
+    async _onToggleNightMode(device) {
+        const current = await this._client.getNightMode(device.host, device.port);
+        await this._client.setNightMode(device.host, device.port, !current);
         this._pollDevice(device);
     }
 
