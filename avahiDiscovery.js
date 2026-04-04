@@ -43,7 +43,7 @@ const AvahiDiscovery = GObject.registerClass({
         try {
             this._bus = Gio.bus_get_sync(Gio.BusType.SYSTEM, null);
         } catch (e) {
-            log(`[dvlt-ctrl] Failed to connect to system bus: ${e.message}`);
+            console.error(`[dvlt-ctrl] Failed to connect to system bus: ${e.message}`);
             return;
         }
 
@@ -70,7 +70,7 @@ const AvahiDiscovery = GObject.registerClass({
 
             this._browserPath = result.get_child_value(0).get_string()[0];
         } catch (e) {
-            log(`[dvlt-ctrl] Failed to create Avahi ServiceBrowser: ${e.message}`);
+            console.error(`[dvlt-ctrl] Failed to create Avahi ServiceBrowser: ${e.message}`);
             return;
         }
 
@@ -108,7 +108,6 @@ const AvahiDiscovery = GObject.registerClass({
         this._rescanTimerId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, RESCAN_INTERVAL_SECONDS, () => {
             if (!this._running)
                 return GLib.SOURCE_REMOVE;
-            log(`[dvlt-ctrl] Periodic re-scan`);
             this._startBrowser();
             return GLib.SOURCE_CONTINUE;
         });
@@ -132,7 +131,7 @@ const AvahiDiscovery = GObject.registerClass({
         if (this._resolvedNames.has(name))
             return;
 
-        log(`[dvlt-ctrl] ItemNew: "${name}" iface=${iface} proto=${protocol}`);
+        console.debug(`[dvlt-ctrl] ItemNew: "${name}" iface=${iface} proto=${protocol}`);
 
         try {
             const result = this._bus.call_sync(
@@ -174,12 +173,12 @@ const AvahiDiscovery = GObject.registerClass({
                 Gio.DBusSignalFlags.NONE,
                 (_conn, _sender, _path, _iface, _signal, failParams) => {
                     const error = failParams.get_child_value(0).get_string()[0];
-                    log(`[dvlt-ctrl] Resolver failed for a service: ${error}`);
+                    console.warn(`[dvlt-ctrl] Resolver failed for a service: ${error}`);
                 }
             );
             this._subscriptionIds.push(failId);
         } catch (e) {
-            log(`[dvlt-ctrl] Failed to resolve service "${name}": ${e.message}`);
+            console.error(`[dvlt-ctrl] Failed to resolve service "${name}": ${e.message}`);
         }
     }
 
@@ -206,7 +205,7 @@ const AvahiDiscovery = GObject.registerClass({
         } catch (_e) {}
 
         this._resolvedNames.add(name);
-        log(`[dvlt-ctrl] Avahi resolved: ${name} (${model}) -> ${address}:${port}`);
+        console.debug(`[dvlt-ctrl] Resolved: ${name} (${model}) -> ${address}:${port}`);
         this.emit('device-found', name, address, port, model);
     }
 

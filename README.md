@@ -21,7 +21,7 @@ A GNOME Shell extension to control Devialet speakers on your local network.
 ## Installation
 
 ```bash
-ln -s /path/to/gnome-dvlt-ctrl ~/.local/share/gnome-shell/extensions/dvlt-ctrl@music
+ln -s /path/to/gnome-dvlt-ctrl ~/.local/share/gnome-shell/extensions/dvlt-ctrl@guzu.github.io
 ```
 
 Restart GNOME Shell:
@@ -31,7 +31,7 @@ Restart GNOME Shell:
 Enable the extension:
 
 ```bash
-gnome-extensions enable dvlt-ctrl@music
+gnome-extensions enable dvlt-ctrl@guzu.github.io
 ```
 
 ## Logs

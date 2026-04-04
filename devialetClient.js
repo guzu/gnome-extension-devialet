@@ -17,6 +17,10 @@ export default class DevialetClient {
         this._session = new Soup.Session({timeout: 2});
     }
 
+    get session() {
+        return this._session;
+    }
+
     _buildUri(host, port, endpoint) {
         return GLib.Uri.parse(`http://${host}:${port}${API_PREFIX}${endpoint}`, GLib.UriFlags.NONE);
     }

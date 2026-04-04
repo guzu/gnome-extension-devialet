@@ -1,7 +1,7 @@
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 
-const CACHE_DIR = GLib.build_filenamev([GLib.get_home_dir(), '.cache']);
+const CACHE_DIR = GLib.get_user_cache_dir();
 const CACHE_FILE = GLib.build_filenamev([CACHE_DIR, 'dvlt-ctrl-gnome']);
 
 /**
@@ -41,6 +41,6 @@ export function saveCache(devices) {
             null
         );
     } catch (e) {
-        log(`[dvlt-ctrl] Failed to save cache: ${e.message}`);
+        console.error(`[dvlt-ctrl] Failed to save cache: ${e.message}`);
     }
 }

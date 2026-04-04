@@ -219,7 +219,7 @@ class DevialetIndicator extends PanelMenu.Button {
         const device = {name, host, port: String(port), model, displayName, state: null, pollTimerId: null};
         this._devices.set(name, device);
 
-        log(`[dvlt-ctrl] Found: ${displayName} (${model}) at ${host}:${port}`);
+        console.debug(`[dvlt-ctrl] Found: ${displayName} (${model}) at ${host}:${port}`);
 
         this._addDeviceToMenu(device);
         this._updateStatusLabel();
@@ -327,7 +327,7 @@ class DevialetIndicator extends PanelMenu.Button {
 
     _loadCoverArt(device, url) {
         try {
-            const session = new Soup.Session({timeout: 5});
+            const session = this._client.session;
             const uri = GLib.Uri.parse(url, GLib.UriFlags.NONE);
             const msg = new Soup.Message({method: 'GET', uri});
             session.send_and_read_async(msg, GLib.PRIORITY_DEFAULT, null, (_s, result) => {
@@ -407,7 +407,7 @@ class DevialetIndicator extends PanelMenu.Button {
         for (const d of cached) {
             if (!d.name || !d.host || !d.port)
                 continue;
-            log(`[dvlt-ctrl] Loading cached device: ${d.displayName || d.name}`);
+            console.debug(`[dvlt-ctrl] Loading cached device: ${d.displayName || d.name}`);
             const device = {name: d.name, host: d.host, port: d.port, model: d.model, displayName: d.displayName, state: null, pollTimerId: null};
             this._devices.set(d.name, device);
             this._addDeviceToMenu(device);
@@ -424,7 +424,7 @@ class DevialetIndicator extends PanelMenu.Button {
             // A quick playback state fetch is enough to confirm reachability
             const state = await this._client.getPlaybackState(device.host, device.port);
             if (!state) {
-                log(`[dvlt-ctrl] Cached device unreachable: ${name}`);
+                console.debug(`[dvlt-ctrl] Cached device unreachable: ${name}`);
                 this._stopPolling(device);
                 this._removeDeviceFromMenu(device);
                 this._devices.delete(name);
