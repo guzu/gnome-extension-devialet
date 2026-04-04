@@ -238,7 +238,6 @@ class DevialetIndicator extends PanelMenu.Button {
         this._removeDeviceFromMenu(device);
         this._devices.delete(name);
         this._updateStatusLabel();
-        this._updatePanelLabel();
     }
 
     // ── Polling ───────────────────────────────────────────────────────────────
@@ -274,7 +273,6 @@ class DevialetIndicator extends PanelMenu.Button {
             device.state = state;
             this._updateDeviceUI(device, state, volume);
         }
-        this._updatePanelLabel();
     }
 
     // ── UI updates ────────────────────────────────────────────────────────────
@@ -346,9 +344,6 @@ class DevialetIndicator extends PanelMenu.Button {
         } catch (_e) {}
     }
 
-    _updatePanelLabel() {
-    }
-
     _formatSourceType(sourceType) {
         const map = {
             'spotifyconnect': 'Spotify',
@@ -416,10 +411,10 @@ class DevialetIndicator extends PanelMenu.Button {
             const device = {name: d.name, host: d.host, port: d.port, model: d.model, displayName: d.displayName, state: null, pollTimerId: null};
             this._devices.set(d.name, device);
             this._addDeviceToMenu(device);
-            this._updateStatusLabel();
             this._pollDevice(device);
             this._startPolling(device);
         }
+        this._updateStatusLabel();
         if (this._devices.size > 0)
             this._verifyCachedDevices();
     }

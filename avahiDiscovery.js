@@ -109,7 +109,6 @@ const AvahiDiscovery = GObject.registerClass({
             if (!this._running)
                 return GLib.SOURCE_REMOVE;
             log(`[dvlt-ctrl] Periodic re-scan`);
-            this._resolvedNames.clear();
             this._startBrowser();
             return GLib.SOURCE_CONTINUE;
         });
