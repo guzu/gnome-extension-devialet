@@ -392,6 +392,15 @@ class DevialetIndicator extends PanelMenu.Button {
         await this._client.setVolume(device.host, device.port, volume);
     }
 
+    get devices() {
+        return this._devices;
+    }
+
+    pollAllDevices() {
+        for (const device of this._devices.values())
+            this._pollDevice(device);
+    }
+
     _onRefresh() {
         // Background scan: don't clear the UI.
         // New devices will be added, unreachable ones are removed by _verifyCachedDevices.

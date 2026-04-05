@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.dvlt-ctrl"
+          path="/org/gnome/shell/extensions/dvlt-ctrl/">
+    <key name="volume-up" type="as">
+      <default>[]</default>
+      <summary>Volume up</summary>
+      <description>Increase volume on all Devialet speakers</description>
+    </key>
+    <key name="volume-down" type="as">
+      <default>[]</default>
+      <summary>Volume down</summary>
+      <description>Decrease volume on all Devialet speakers</description>
+    </key>
+  </schema>
+</schemalist>

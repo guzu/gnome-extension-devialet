@@ -17,6 +17,17 @@ Controls Devialet speakers using the Devialet IP Control protocol over HTTP.
 - **Device cache** — previously discovered speakers appear instantly on startup
 - **Background refresh** — devices that go offline are removed, new ones appear automatically
 
+## Keyboard shortcuts
+
+Volume up/down can be bound to keyboard shortcuts. The shortcuts only take effect when exactly one speaker is currently playing — if zero or multiple speakers are playing, the shortcut is ignored.
+
+No shortcuts are assigned by default. To configure them:
+
+```bash
+gsettings --schemadir schemas/ set org.gnome.shell.extensions.dvlt-ctrl volume-up "['<Super>AudioRaiseVolume']"
+gsettings --schemadir schemas/ set org.gnome.shell.extensions.dvlt-ctrl volume-down "['<Super>AudioLowerVolume']"
+```
+
 ## Requirements
 
 - GNOME Shell 46, 47 or 48
