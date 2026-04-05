@@ -1,0 +1,29 @@
+{
+  "name": "dvlt-ctrl-gnome",
+  "version": "1.0.0",
+  "description": "A GNOME Shell extension to control Devialet speakers on your local network.",
+  "main": "avahiDiscovery.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint *.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guzu/gnome-extension-devialet.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/guzu/gnome-extension-devialet/issues"
+  },
+  "homepage": "https://github.com/guzu/gnome-extension-devialet#readme",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.2.0"
+  }
+}
