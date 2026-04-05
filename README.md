@@ -2,7 +2,11 @@
 
 A GNOME Shell extension to control Devialet speakers on your local network.
 
-![Screenshot](img/screenshot.png)
+<p align="center">
+  <img src="img/screenshot.png" alt="Screenshot">
+</p>
+
+Controls Devialet speakers using the Devialet IP Control protocol over HTTP.
 
 ## Features
 
