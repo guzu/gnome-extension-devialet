@@ -65,7 +65,8 @@ class DevialetIndicator extends PanelMenu.Button {
             can_focus: true,
             child: new St.Icon({icon_name: 'view-refresh-symbolic', icon_size: 16}),
         });
-        refreshBtn.connect('clicked', () => this._onRefresh());
+        this._refreshBtn = refreshBtn;
+        this._refreshBtnSignalId = refreshBtn.connect('clicked', () => this._onRefresh());
         bottomBox.add_child(refreshBtn);
         bottomItem.add_child(bottomBox);
         this.menu.addMenuItem(bottomItem);
@@ -83,7 +84,8 @@ class DevialetIndicator extends PanelMenu.Button {
             can_focus: false,
             style_class: 'dvlt-card',
         });
-        cardItem.connect('activate', () => false);
+        device._signalIds = [];
+        device._signalIds.push([cardItem, cardItem.connect('activate', () => false)]);
 
         const cardBox = new St.BoxLayout({vertical: true, x_expand: true});
 
@@ -117,9 +119,9 @@ class DevialetIndicator extends PanelMenu.Button {
             x_expand: true,
             y_align: Clutter.ActorAlign.CENTER,
         });
-        device.prevBtn = this._makeControlBtn('media-skip-backward-symbolic', () => this._onPrevious(device));
-        device.playPauseBtn = this._makeControlBtn('media-playback-start-symbolic', () => this._onPlayPause(device));
-        device.nextBtn = this._makeControlBtn('media-skip-forward-symbolic', () => this._onNext(device));
+        device.prevBtn = this._makeControlBtn('media-skip-backward-symbolic', () => this._onPrevious(device), device);
+        device.playPauseBtn = this._makeControlBtn('media-playback-start-symbolic', () => this._onPlayPause(device), device);
+        device.nextBtn = this._makeControlBtn('media-skip-forward-symbolic', () => this._onNext(device), device);
         controlsBox.add_child(device.prevBtn);
         controlsBox.add_child(device.playPauseBtn);
         controlsBox.add_child(device.nextBtn);
@@ -153,10 +155,10 @@ class DevialetIndicator extends PanelMenu.Button {
             style_class: 'dvlt-volume-label',
             y_align: Clutter.ActorAlign.CENTER,
         });
-        device.slider.connect('notify::value', () => {
+        device._signalIds.push([device.slider, device.slider.connect('notify::value', () => {
             device.volLabel.text = `${Math.round(device.slider.value * 100)}%`;
-        });
-        device.slider.connect('drag-end', () => this._onVolumeChanged(device));
+        })]);
+        device._signalIds.push([device.slider, device.slider.connect('drag-end', () => this._onVolumeChanged(device))]);
         volumeBox.add_child(volIcon);
         volumeBox.add_child(device.slider);
         volumeBox.add_child(device.volLabel);
@@ -176,13 +178,15 @@ class DevialetIndicator extends PanelMenu.Button {
         return section;
     }
 
-    _makeControlBtn(iconName, callback) {
+    _makeControlBtn(iconName, callback, device) {
         const btn = new St.Button({
             style_class: 'dvlt-control-button',
             can_focus: true,
             child: new St.Icon({icon_name: iconName, icon_size: 20}),
         });
-        btn.connect('clicked', callback);
+        const id = btn.connect('clicked', callback);
+        if (device)
+            device._signalIds.push([btn, id]);
         return btn;
     }
 
@@ -196,6 +200,11 @@ class DevialetIndicator extends PanelMenu.Button {
     }
 
     _removeDeviceFromMenu(device) {
+        if (device._signalIds) {
+            for (const [obj, id] of device._signalIds)
+                obj.disconnect(id);
+            device._signalIds = [];
+        }
         if (device.section) {
             device.section.destroy();
             device.section = null;
@@ -411,8 +420,8 @@ class DevialetIndicator extends PanelMenu.Button {
 
     // ── Cache ─────────────────────────────────────────────────────────────────
 
-    _loadCachedDevices() {
-        const cached = loadCache();
+    async _loadCachedDevices() {
+        const cached = await loadCache();
         for (const d of cached) {
             if (!d.name || !d.host || !d.port)
                 continue;
@@ -454,8 +463,19 @@ class DevialetIndicator extends PanelMenu.Button {
 
     destroy() {
         this._destroyed = true;
-        for (const device of this._devices.values())
+        for (const device of this._devices.values()) {
             this._stopPolling(device);
+            if (device._signalIds) {
+                for (const [obj, id] of device._signalIds)
+                    obj.disconnect(id);
+                device._signalIds = [];
+            }
+        }
+
+        if (this._refreshBtnSignalId) {
+            this._refreshBtn.disconnect(this._refreshBtnSignalId);
+            this._refreshBtnSignalId = null;
+        }
 
         if (this._discoveryFoundId) {
             this._discovery.disconnect(this._discoveryFoundId);

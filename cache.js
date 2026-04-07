@@ -6,14 +6,12 @@ const CACHE_FILE = GLib.build_filenamev([CACHE_DIR, 'dvlt-ctrl-gnome']);
 
 /**
  * Load cached devices list.
- * Returns array of {name, host, port, model, displayName} or empty array.
+ * Returns promise of array of {name, host, port, model, displayName} or empty array.
  */
-export function loadCache() {
+export async function loadCache() {
     try {
         const file = Gio.File.new_for_path(CACHE_FILE);
-        const [ok, contents] = file.load_contents(null);
-        if (!ok)
-            return [];
+        const [contents] = await file.load_contents_async(null);
         const text = new TextDecoder().decode(contents);
         const data = JSON.parse(text);
         if (Array.isArray(data))
@@ -26,7 +24,7 @@ export function loadCache() {
  * Save devices list to cache.
  * @param {Array} devices - array of {name, host, port, model, displayName}
  */
-export function saveCache(devices) {
+export async function saveCache(devices) {
     try {
         const dir = Gio.File.new_for_path(CACHE_DIR);
         if (!dir.query_exists(null))
@@ -34,7 +32,7 @@ export function saveCache(devices) {
 
         const file = Gio.File.new_for_path(CACHE_FILE);
         const json = JSON.stringify(devices, null, 2);
-        file.replace_contents(
+        await file.replace_contents_async(
             new TextEncoder().encode(json),
             null, false,
             Gio.FileCreateFlags.REPLACE_DESTINATION,
