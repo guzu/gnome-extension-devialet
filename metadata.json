@@ -1,6 +1,6 @@
 {
   "name": "Devialet Control",
-  "description": "Control Devialet speakers on your network — volume, playback and device discovery",
+  "description": "Control Devialet speakers on your network — volume, playback and device discovery.\n\nThis extension is not affiliated, funded, or in any way associated with Devialet.",
   "uuid": "dvlt-ctrl@guzu.github.io",
   "shell-version": [
     "46",

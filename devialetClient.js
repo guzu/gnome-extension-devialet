@@ -1,4 +1,4 @@
-import Soup from 'gi://Soup?version=3.0';
+import Soup from 'gi://Soup';
 import GLib from 'gi://GLib';
 
 const API_PREFIX = '/ipcontrol/v1';
@@ -122,6 +122,7 @@ export default class DevialetClient {
     }
 
     destroy() {
+        this._session?.abort();
         this._session = null;
     }
 }
