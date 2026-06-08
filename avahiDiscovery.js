@@ -29,23 +29,17 @@ const AvahiDiscovery = GObject.registerClass({
         this._browserPath = null;
         this._subscriptionIds = [];
         this._resolverPaths = [];
-        this._running = false;
         this._rescanTimerId = null;
         this._resolvedNames = new Set();
     }
 
     start() {
-        if (this._running)
-            return;
-
         try {
             this._bus = Gio.bus_get_sync(Gio.BusType.SYSTEM, null);
         } catch (e) {
             console.error(`[dvlt-ctrl] Failed to connect to system bus: ${e.message}`);
             return;
         }
-
-        this._running = true;
 
         this._startBrowser();
         this._startRescanTimer();
@@ -106,8 +100,6 @@ const AvahiDiscovery = GObject.registerClass({
     _startRescanTimer() {
         this._stopRescanTimer();
         this._rescanTimerId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, RESCAN_INTERVAL_SECONDS, () => {
-            if (!this._running)
-                return GLib.SOURCE_REMOVE;
             this._startBrowser();
             return GLib.SOURCE_CONTINUE;
         });
@@ -249,10 +241,6 @@ const AvahiDiscovery = GObject.registerClass({
     }
 
     stop() {
-        if (!this._running)
-            return;
-
-        this._running = false;
         this._stopRescanTimer();
         this._stopBrowser();
         this._bus = null;
