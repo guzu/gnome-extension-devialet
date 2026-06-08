@@ -38,14 +38,14 @@ const AvahiDiscovery = GObject.registerClass({
         if (this._running)
             return;
 
-        this._running = true;
-
         try {
             this._bus = Gio.bus_get_sync(Gio.BusType.SYSTEM, null);
         } catch (e) {
             console.error(`[dvlt-ctrl] Failed to connect to system bus: ${e.message}`);
             return;
         }
+
+        this._running = true;
 
         this._startBrowser();
         this._startRescanTimer();
