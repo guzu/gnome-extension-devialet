@@ -10,6 +10,9 @@
   ],
   "settings-schema": "org.gnome.shell.extensions.dvlt-ctrl",
   "url": "https://github.com/guzu/gnome-extension-devialet",
+  "donations": {
+    "github": "guzu"
+  },
   "version": 3,
   "version-name": "1.2.0"
 }
