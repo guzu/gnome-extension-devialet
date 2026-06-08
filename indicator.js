@@ -85,6 +85,7 @@ class DevialetIndicator extends PanelMenu.Button {
             style_class: 'dvlt-card',
         });
         device._signalIds = [];
+        device._tooltipLabels = [];
         device._signalIds.push([cardItem, cardItem.connect('activate', () => false)]);
 
         const cardBox = new St.BoxLayout({vertical: true, x_expand: true});
@@ -134,8 +135,8 @@ class DevialetIndicator extends PanelMenu.Button {
         });
         device.muteBtn = this._makeMiniBtn('audio-volume-muted-symbolic', () => this._onToggleMute(device), device);
         device.nightBtn = this._makeMiniBtn('weather-clear-night-symbolic', () => this._onToggleNightMode(device), device);
-        this._addTooltip(device.muteBtn, 'Mute');
-        this._addTooltip(device.nightBtn, 'Night mode');
+        this._addTooltip(device.muteBtn, 'Mute', device);
+        this._addTooltip(device.nightBtn, 'Night mode', device);
         extraBox.add_child(device.muteBtn);
         extraBox.add_child(device.nightBtn);
 
@@ -217,7 +218,7 @@ class DevialetIndicator extends PanelMenu.Button {
         return btn;
     }
 
-    _addTooltip(widget, text) {
+    _addTooltip(widget, text, device) {
         widget.accessible_name = text;
         const label = new St.Label({
             style_class: 'dvlt-tooltip',
@@ -225,8 +226,9 @@ class DevialetIndicator extends PanelMenu.Button {
             visible: false,
         });
         global.stage.add_child(label);
+        device._tooltipLabels.push(label);
 
-        widget.connect('enter-event', () => {
+        device._signalIds.push([widget, widget.connect('enter-event', () => {
             const [x, y] = widget.get_transformed_position();
             const widgetWidth = widget.get_width();
             label.set_position(
@@ -234,9 +236,8 @@ class DevialetIndicator extends PanelMenu.Button {
                 Math.round(y - label.get_height() - 4)
             );
             label.show();
-        });
-        widget.connect('leave-event', () => label.hide());
-        widget.connect('destroy', () => label.destroy());
+        })]);
+        device._signalIds.push([widget, widget.connect('leave-event', () => label.hide())]);
     }
 
     // ── Device lifecycle ──────────────────────────────────────────────────────
@@ -248,12 +249,22 @@ class DevialetIndicator extends PanelMenu.Button {
         device.section = section;
     }
 
-    _removeDeviceFromMenu(device) {
+    _clearDeviceSignals(device) {
         if (device._signalIds) {
             for (const [obj, id] of device._signalIds)
                 obj.disconnect(id);
             device._signalIds = [];
         }
+        // Tooltip labels live on global.stage, not in the card, so destroy them explicitly
+        if (device._tooltipLabels) {
+            for (const label of device._tooltipLabels)
+                label.destroy();
+            device._tooltipLabels = [];
+        }
+    }
+
+    _removeDeviceFromMenu(device) {
+        this._clearDeviceSignals(device);
         if (device.section) {
             device.section.destroy();
             device.section = null;
@@ -546,11 +557,7 @@ class DevialetIndicator extends PanelMenu.Button {
         this._destroyed = true;
         for (const device of this._devices.values()) {
             this._stopPolling(device);
-            if (device._signalIds) {
-                for (const [obj, id] of device._signalIds)
-                    obj.disconnect(id);
-                device._signalIds = [];
-            }
+            this._clearDeviceSignals(device);
         }
 
         if (this._refreshBtnSignalId) {
